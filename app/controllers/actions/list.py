@@ -2,7 +2,7 @@ from typing import List
 from fastapi import HTTPException, status
 
 # Models
-from ..models.action import Action
+from ...models.action import Action
 
 
 class ActionList:
@@ -22,8 +22,14 @@ class ActionList:
 
     # Do not allow to UPDATE entire action collection
     def put_actions(self) -> HTTPException:
-        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="Method not allowed for updating actions",
+        )
 
     # Do not allow to DELETE entire action collection
     def delete_actions(self) -> HTTPException:
-        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED)
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="Method not allowed for deleting actions",
+        )

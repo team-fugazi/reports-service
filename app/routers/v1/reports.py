@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 
 from ...models.report import Report
-from ...controllers.report_list import ReportList
+from ...controllers.reports.list import ReportList
 from ...database.mongodb import database
 
 # Router
-router = APIRouter(prefix="/reports", tags=["Reports", "v1"])
+router = APIRouter(prefix="/reports", tags=["Reports"])
 
 # Controllers
 list_routes = ReportList(database.reports)
