@@ -28,7 +28,7 @@ def put_reports_list():
 
 
 @router.delete("/")
-def delete_service_list():
+def delete_reports_list():
     return list_routes.delete_reports()
 
 

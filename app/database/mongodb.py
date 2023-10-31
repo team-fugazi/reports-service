@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import certifi
 import os
 
 load_dotenv()  # load environment variables from .env file
@@ -13,5 +14,5 @@ db_params = os.getenv("DB_QUERY_PARAMS")
 
 # Database connection
 db_uri = f"{db_protocol}://{db_user}:{db_pass}@{db_host}/?{db_params}"
-client = MongoClient(db_uri)
+client = MongoClient(db_uri, tlsCAFile=certifi.where())
 database = client.reports
