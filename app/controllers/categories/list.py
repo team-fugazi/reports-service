@@ -24,12 +24,12 @@ class CategoryList:
     def put_categories(self) -> HTTPException:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            detail="Method not allowed for updating categories",
+            detail="Bulk update not allowed for categories",
         )
 
     # Do not allow to DELETE entire category collection
     def delete_categories(self) -> HTTPException:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            detail="Method not allowed for deleting categories",
+            detail="Bulk delete not allowed for categories",
         )

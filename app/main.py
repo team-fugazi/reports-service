@@ -6,7 +6,7 @@ from .core.config import origins, details
 
 # Routes
 from .routers.v1.actions import router as actions_v1
-# from .routers.v1.attachments import router as attachments_v1
+from .routers.v1.attachments import router as attachments_v1
 from .routers.v1.categories import router as categories_v1
 from .routers.v1.comments import router as comments_v1
 from .routers.v1.reports import router as reports_v1
@@ -30,7 +30,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(actions_v1, prefix="/v1")
-# app.include_router(attachments_v1, prefix="/v1")
+app.include_router(attachments_v1, prefix="/v1")
 app.include_router(categories_v1, prefix="/v1")
 app.include_router(comments_v1, prefix="/v1")
 app.include_router(reports_v1, prefix="/v1")
