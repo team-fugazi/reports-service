@@ -1,3 +1,5 @@
+# Path: tests/helpers/transformers.py
+
 # Models
 from ..models.action import Action
 from ..models.attachment import Attachment
@@ -7,7 +9,7 @@ from ..models.report import Report
 
 
 # Transforms a MongoDB document into an Action model TODO: convert fields
-def transform_mongodb_to_action(document):
+def transform_mongodb_to_action(document) -> Action:
     action_id = str(document.get("_id", ""))
     return Action(
         id=action_id,
@@ -18,7 +20,7 @@ def transform_mongodb_to_action(document):
 
 
 # Transforms a MongoDB document into an Attachment model TODO: convert fields
-def transform_mongodb_to_attachment(document):
+def transform_mongodb_to_attachment(document) -> Attachment:
     attachment_id = str(document.get("_id", ""))
     return Attachment(
         id=attachment_id,
@@ -29,7 +31,7 @@ def transform_mongodb_to_attachment(document):
 
 
 # Transforms a MongoDB document into a Category model
-def transform_mongodb_to_category(document):
+def transform_mongodb_to_category(document) -> Category:
     category_id = str(document.get("_id", ""))
     return Category(
         id=category_id,
@@ -40,7 +42,7 @@ def transform_mongodb_to_category(document):
 
 
 # Transforms a MongoDB document into a Comment model TODO: convert fields
-def transform_mongodb_to_comment(document):
+def transform_mongodb_to_comment(document) -> Comment:
     comment_id = str(document.get("_id", ""))
     return Comment(
         id=comment_id,
@@ -51,7 +53,7 @@ def transform_mongodb_to_comment(document):
 
 
 # Transforms a MongoDB document into a Report model TODO: convert fields
-def transform_mongodb_to_report(document):
+def transform_mongodb_to_report(document) -> Report:
     report_id = str(document.get("_id", ""))
     return Report(
         id=report_id,

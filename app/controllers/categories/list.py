@@ -1,3 +1,5 @@
+# Path: app/controllers/categories/list.py
+
 from typing import List
 from fastapi import HTTPException, status
 

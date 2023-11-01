@@ -1,3 +1,5 @@
+# Path: app/models/category.py
+
 from pydantic import BaseModel, Field
 from bson import ObjectId
 

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from ...models.comment import Comment
 from ...controllers.comments.list import CommentList
+from ...controllers.comments.detail import CommentDetail
 from ...database.mongodb import database
 
 # Router
@@ -9,6 +10,7 @@ router = APIRouter(prefix="/comments", tags=["Comments"])
 
 # Initialize controller
 comment_list = CommentList(database.comments)
+comment_detail = CommentDetail(database.comments)
 
 
 # Get all comments
@@ -33,3 +35,23 @@ def put_comments():
 @router.delete("/")
 def delete_comments():
     return comment_list.delete_comments()
+
+# Get a single comment
+@router.get("/{comment_id}")
+def get_comment(comment_id: str):
+    return comment_detail.get_comment(comment_id)
+
+# Do not allow to CREATE entire comment collection
+@router.post("/{comment_id}")
+def post_comment():
+    return comment_detail.post_comment()
+
+# Update a single comment
+@router.put("/{comment_id}")
+def put_comment(comment: Comment):
+    return comment_detail.put_comment(comment)
+
+# Delete a single comment
+@router.delete("/{comment_id}")
+def delete_comment(comment_id: str):
+    return comment_detail.delete_comment(comment_id)
