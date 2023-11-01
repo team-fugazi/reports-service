@@ -4,6 +4,9 @@ from fastapi import HTTPException, status
 # Models
 from ...models.category import Category
 
+# Helpers
+from ...helpers.transformers import transform_mongodb_to_category
+
 
 class CategoryList:
     def __init__(self, db):
@@ -12,7 +15,7 @@ class CategoryList:
     # Get all categories from the database
     def get_categories(self) -> List[Category]:
         categories = self.db.find()
-        return [Category(**category) for category in categories]
+        return [transform_mongodb_to_category(category) for category in categories]
 
     # Create a new category in the database
     def post_categories(self, category: Category) -> Category:
