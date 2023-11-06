@@ -1,9 +1,6 @@
 # core/config.py
 import os
 
-# from dotenv import load_dotenv
-
-
 origins = [
     "http://localhost",
     "http://localhost:3000",

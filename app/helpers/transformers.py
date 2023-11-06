@@ -8,14 +8,18 @@ from ..models.comment import Comment
 from ..models.report import Report
 
 
-# Transforms a MongoDB document into an Action model TODO: convert fields
+# Transforms a MongoDB document into an Action model
 def transform_mongodb_to_action(document) -> Action:
     action_id = str(document.get("_id", ""))
     return Action(
         id=action_id,
-        action_id=document.get("action_id", ""),
-        name=document.get("name", ""),
-        description=document.get("description", ""),
+        action_type=document.get("action_type", ""),
+        user_id=document.get("user_id", ""),
+        moderator_id=document.get("moderator_id", ""),
+        reason=document.get("reason", ""),
+        details=document.get("details", ""),
+        created_at=document.get("created_at", ""),
+        expires_at=document.get("expires_at", ""),
     )
 
 

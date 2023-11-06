@@ -4,6 +4,9 @@ from fastapi import HTTPException, status
 # Models
 from ...models.action import Action
 
+# Helpers
+from ...helpers.transformers import transform_mongodb_to_action
+
 
 class ActionList:
     def __init__(self, db):
@@ -12,7 +15,7 @@ class ActionList:
     # Get all actions from the database
     def get_actions(self) -> List[Action]:
         actions = self.db.find()
-        return [Action(**action) for action in actions]
+        return [transform_mongodb_to_action(action) for action in actions]
 
     # Create a new action in the database
     def post_actions(self, action: Action) -> Action:

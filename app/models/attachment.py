@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class Attachment(BaseModel):
-    attachment_id: str = Field(..., description="Reference to an attachment document")
+    id: Optional[str] = Field(..., description="MongoDB Object ID of the document")
     url: str = Field(..., description="URL to the attachment")
+    description: Optional[str] = Field(None, description="Attachment description")
