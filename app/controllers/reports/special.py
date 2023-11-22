@@ -5,6 +5,7 @@ from bson import ObjectId
 from datetime import datetime
 
 # Models
+from ...models.report import Report
 from ...models.comment import Comment
 from ...models.action import Action
 
@@ -12,6 +13,8 @@ from ...models.action import Action
 class ReportSpecial:
     def __init__(self, db):
         self.db = db
+
+    """ Comments """
 
     # Add a comment to a report
     def add_comment(self, report_id: str, comment: Comment) -> Comment:
@@ -47,6 +50,8 @@ class ReportSpecial:
 
         return {"status": status.HTTP_200_OK, "obj": "hello"}
 
+    """ Actions """
+
     # Add an action to a report
     def add_action(self, report_id: str, action: Action) -> Action:
         # Convert partial response body to dict
@@ -80,3 +85,13 @@ class ReportSpecial:
         )
 
         return {"status": status.HTTP_200_OK, "obj": "hello"}
+
+    """ Search """
+
+    # Search reports
+    def search_reports(self, query: str) -> List[Report]:
+        reports = self.db.reports.find(
+            {"$text": {"$search": query}},
+            {"score": {"$meta": "textScore"}},
+        )
+        return [Report(**report) for report in reports]
