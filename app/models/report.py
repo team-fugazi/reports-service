@@ -13,7 +13,7 @@ from .comment import Comment
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
-# Report Request Model
+# Partial Report model: used for sparse body requests
 class ReportPartial(BaseModel):
     description: str = Field(..., description="Report description")                 # Metadata
     original_post: str = Field(..., description="URL to the original post")         # Metadata
@@ -30,7 +30,7 @@ class ReportPartial(BaseModel):
     #             "description": "This is a report about offensive content.",
     #         }
 
-# Report model
+# Report model: used for full reports
 class Report(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)                     # Metadata
     description: str = Field(..., description="Report description")                 # Metadata

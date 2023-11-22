@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from ...models.comment import Comment
+from ...models.comment import Comment, CommentPartial
 from ...controllers.comments.list import CommentList
 from ...controllers.comments.detail import CommentDetail
 from ...database.mongodb import database
@@ -21,7 +21,7 @@ def get_comments():
 
 # Create a new comment
 @router.post("/")
-def post_comments(comment: Comment):
+def post_comments(comment: CommentPartial):
     return comment_list.post_comments(comment)
 
 

@@ -1,8 +1,11 @@
 from typing import List
 from fastapi import HTTPException, status
 from pydantic import ValidationError
-from bson import ObjectId
 from datetime import datetime
+from bson import ObjectId
+
+# Helpers
+from ...helpers.meta_generator import generate_meta
 
 # Models
 from ...models.report import ReportPartial
@@ -15,32 +18,60 @@ class ReportList:
 
     # Get all reports from the database
     def get_reports(self) -> List[Report]:
-        reports = self.db.reports.find()
-        return [Report(**report) for report in reports]
+        reports_cursor = self.db.reports.find()
+
+        # get document count
+        num_documents = self.db.reports.count_documents({})
+
+        # modify metadata to include return count
+        modified_meta = generate_meta()
+        modified_meta["total_count"] = num_documents
+
+        return {
+            "status": status.HTTP_200_OK,
+            "meta": modified_meta,
+            "data": [Report(**report) for report in reports_cursor],
+        }
 
     # Create a new report in the database
-    def post_reports(self, report: ReportPartial) -> Report:
+    def post_reports(self, report_partial: ReportPartial) -> Report:
         # Convert partial response body to dict
-        report = report.model_dump()
+        report_dict = report_partial.model_dump()
 
         # Add metadata
-        report["id"] = None
-        report["created_at"] = datetime.now()
+        report_dict["id"] = None
+        report_dict["created_at"] = datetime.now()
 
         # Add empty lists for content
-        report["comments"] = []
-        report["actions"] = []
+        report_dict["comments"] = []
+        report_dict["actions"] = []
 
-        try:
-            report_full = Report(**report)
-        except ValidationError as e:
-            return {"status": status.HTTP_422_UNPROCESSABLE_ENTITY, "detail": str(e)}
-        
+        # Validate and create a Report instance
+        report_full = Report(**report_dict)
+
+        # Insert report into the database
         result = self.db.reports.insert_one(
             report_full.model_dump(by_alias=True, exclude=["id"])
         )
 
-        return {"status": status.HTTP_201_CREATED, "obj": "hello"}
+        # Check if report was created
+        if not result.acknowledged:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Report could not be created",
+            )
+
+        # Fetch the inserted report from the database
+        inserted_report = self.db.reports.find_one(
+            {"_id": ObjectId(result.inserted_id)}
+        )
+
+        return {
+            "status": status.HTTP_201_CREATED,
+            "meta": generate_meta(),
+            "message": "Resource created successfully",
+            "data": Report(**inserted_report),
+        }
 
     # Do not allow to UPDATE entire report collection
     def put_reports(self) -> HTTPException:

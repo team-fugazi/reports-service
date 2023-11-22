@@ -3,15 +3,19 @@ from fastapi import APIRouter
 from ...models.report import ReportPartial, Report
 from ...controllers.reports.list import ReportList
 from ...controllers.reports.detail import ReportDetail
+from ...controllers.reports.special import ReportSpecial
 from ...database.mongodb import database
+
+# Models
+from ...models.comment import Comment
 
 # Router
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
 # Controllers
 list_routes = ReportList(database)
-detail_routes = ReportDetail(database.reports)
-special_routes = ReportDetail(database.reports)
+detail_routes = ReportDetail(database)
+special_routes = ReportSpecial(database)
 
 
 """ List Routes """
@@ -51,8 +55,8 @@ def post_report_detail():
 
 
 @router.put("/{report_id}")
-def put_report_detail(report: Report):
-    return detail_routes.put_report(report)
+def put_report_detail(report_id: str, report: Report):
+    return detail_routes.put_report(report_id, report)
 
 
 @router.delete("/{report_id}")
@@ -64,29 +68,30 @@ def delete_report_detail(report_id: str):
 
 
 # Add comment to report
-@router.put("/{report_id}/comment")
-def add_comment(report_id: str):
-    return special_routes.add_comment(report_id)
+@router.put("/{report_id}/comment", tags=["Functional"])
+def add_comment(report_id: str, comment: Comment):
+    return special_routes.add_comment(report_id, comment)
 
 
 # Delete comment from report
-@router.delete("/{report_id}/comment/{comment_id}")
+@router.delete("/{report_id}/comment/{comment_id}", tags=["Functional"])
 def delete_comment(report_id: str, comment_id: str):
     return special_routes.delete_comment(report_id, comment_id)
 
 
 # Add action to report
-@router.put("/{report_id}/action")
+@router.put("/{report_id}/action", tags=["Functional"])
 def add_action(report_id: str):
     return special_routes.add_action(report_id)
 
 
 # Delete action from report
-@router.delete("/{report_id}/action/{action_id}")
+@router.delete("/{report_id}/action/{action_id}", tags=["Functional"])
 def delete_action(report_id: str, action_id: str):
     return special_routes.delete_action(report_id, action_id)
 
+
 # Search reports
-@router.get("/search")
+@router.get("/search", tags=["functional"])
 def serach_reports(query: str):
     return special_routes.search_reports(query)
