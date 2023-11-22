@@ -1,7 +1,11 @@
 from typing import List
 from fastapi import HTTPException, status
+from pydantic import ValidationError
+from bson import ObjectId
+from datetime import datetime
 
 # Models
+from ...models.report import ReportPartial
 from ...models.report import Report
 
 
@@ -11,14 +15,32 @@ class ReportList:
 
     # Get all reports from the database
     def get_reports(self) -> List[Report]:
-        reports = self.db.find()
+        reports = self.db.reports.find()
         return [Report(**report) for report in reports]
 
     # Create a new report in the database
-    def post_reports(self, report: Report) -> Report:
-        report_dict = report.model_dump()
-        result = self.db.insert_one(report_dict)
-        return {"status": status.HTTP_201_CREATED, "id": str(result.inserted_id)}
+    def post_reports(self, report: ReportPartial) -> Report:
+        # Convert partial response body to dict
+        report = report.model_dump()
+
+        # Add metadata
+        report["id"] = None
+        report["created_at"] = datetime.now()
+
+        # Add empty lists for content
+        report["comments"] = []
+        report["actions"] = []
+
+        try:
+            report_full = Report(**report)
+        except ValidationError as e:
+            return {"status": status.HTTP_422_UNPROCESSABLE_ENTITY, "detail": str(e)}
+        
+        result = self.db.reports.insert_one(
+            report_full.model_dump(by_alias=True, exclude=["id"])
+        )
+
+        return {"status": status.HTTP_201_CREATED, "obj": "hello"}
 
     # Do not allow to UPDATE entire report collection
     def put_reports(self) -> HTTPException:

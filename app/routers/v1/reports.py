@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from ...models.report import Report
+from ...models.report import ReportPartial, Report
 from ...controllers.reports.list import ReportList
 from ...controllers.reports.detail import ReportDetail
 from ...database.mongodb import database
@@ -9,8 +9,9 @@ from ...database.mongodb import database
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
 # Controllers
-list_routes = ReportList(database.reports)
+list_routes = ReportList(database)
 detail_routes = ReportDetail(database.reports)
+special_routes = ReportDetail(database.reports)
 
 
 """ List Routes """
@@ -22,8 +23,8 @@ def get_reports_list():
 
 
 @router.post("/")
-def post_reports_list(report: Report):
-    return list_routes.post_report(report)
+def post_reports_list(report: ReportPartial):
+    return list_routes.post_reports(report)
 
 
 @router.put("/")
@@ -31,9 +32,9 @@ def put_reports_list():
     return list_routes.put_reports()
 
 
-@router.delete("/")
-def delete_reports_list():
-    return list_routes.delete_reports()
+@router.put("/comment")
+def add_reports_list():
+    return list_routes.put_reports()
 
 
 """ Detail Routes """
@@ -57,3 +58,30 @@ def put_report_detail(report: Report):
 @router.delete("/{report_id}")
 def delete_report_detail(report_id: str):
     return detail_routes.delete_report(report_id)
+
+
+""" Special Routes """
+
+
+# Add comment to report
+@router.put("/{report_id}/comment")
+def add_comment(report_id: str):
+    return special_routes.add_comment(report_id)
+
+
+# Delete comment from report
+@router.delete("/{report_id}/comment/{comment_id}")
+def delete_comment(report_id: str, comment_id: str):
+    return special_routes.delete_comment(report_id, comment_id)
+
+
+# Add action to report
+@router.put("/{report_id}/action")
+def add_action(report_id: str):
+    return special_routes.add_action(report_id)
+
+
+# Delete action from report
+@router.delete("/{report_id}/action/{action_id}")
+def delete_action(report_id: str, action_id: str):
+    return special_routes.delete_action(report_id, action_id)

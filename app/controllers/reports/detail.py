@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from bson import ObjectId
 
 # Models
-from ...models.report import Report
+from ...models.report import ReportPartial, Report
 
 # Transformers
 from ...helpers.transformers import transform_mongodb_to_report

@@ -4,7 +4,7 @@
 from ..models.action import Action
 from ..models.category import Category
 from ..models.comment import Comment
-from ..models.report import Report
+from ..models.report import Report, ReportPartial
 
 
 # Transforms a MongoDB document into an Action model

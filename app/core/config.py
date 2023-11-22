@@ -1,5 +1,4 @@
 # core/config.py
-import os
 
 origins = [
     "http://localhost",
