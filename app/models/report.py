@@ -4,7 +4,6 @@ from datetime import datetime
 
 # Sub models
 from .action import Action
-from .attachment import Attachment
 from .category import Category
 from .comment import Comment
 
@@ -14,7 +13,7 @@ class Report(BaseModel):
     user_id: str = Field(..., description="User ID who submitted the report")
     category: Category
     comments: List[Comment] = []
-    attachments: List[Attachment] = []
+    original_post: str = Field(..., description="URL to the original post")
     actions: List[Action] = []
     description: str = Field(..., description="Report description")
     created_at: datetime = Field(..., description="Timestamp of report submission")

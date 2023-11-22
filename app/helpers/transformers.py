@@ -2,7 +2,6 @@
 
 # Models
 from ..models.action import Action
-from ..models.attachment import Attachment
 from ..models.category import Category
 from ..models.comment import Comment
 from ..models.report import Report
@@ -24,14 +23,14 @@ def transform_mongodb_to_action(document) -> Action:
 
 
 # Transforms a MongoDB document into an Attachment model TODO: convert fields
-def transform_mongodb_to_attachment(document) -> Attachment:
-    attachment_id = str(document.get("_id", ""))
-    return Attachment(
-        id=attachment_id,
-        attachment_id=document.get("attachment_id", ""),
-        name=document.get("name", ""),
-        description=document.get("description", ""),
-    )
+# def transform_mongodb_to_attachment(document) -> Attachment:
+#     attachment_id = str(document.get("_id", ""))
+#     return Attachment(
+#         id=attachment_id,
+#         attachment_id=document.get("attachment_id", ""),
+#         name=document.get("name", ""),
+#         description=document.get("description", ""),
+#    )
 
 
 # Transforms a MongoDB document into a Category model
