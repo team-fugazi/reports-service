@@ -89,9 +89,17 @@ class ReportSpecial:
     """ Search """
 
     # Search reports
-    def search_reports(self, query: str) -> List[Report]:
-        reports = self.db.reports.find(
-            {"$text": {"$search": query}},
-            {"score": {"$meta": "textScore"}},
-        )
-        return [Report(**report) for report in reports]
+    def search_reports(self, query: str):
+        print(query)
+
+        pipeline = [
+            {
+                "$search": {
+                    "index": "default",
+                    "text": {"query": query, "path": {"wildcard": "*"}},
+                }
+            }
+        ]
+
+        return status.HTTP_200_OK
+        # return [Report(**report) for report in reports]

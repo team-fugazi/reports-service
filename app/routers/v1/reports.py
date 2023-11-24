@@ -89,9 +89,3 @@ def add_action(report_id: str):
 @router.delete("/{report_id}/action/{action_id}", tags=["Functional"])
 def delete_action(report_id: str, action_id: str):
     return special_routes.delete_action(report_id, action_id)
-
-
-# Search reports
-@router.get("/search", tags=["functional"])
-def serach_reports(query: str):
-    return special_routes.search_reports(query)
