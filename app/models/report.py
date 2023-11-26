@@ -31,8 +31,8 @@ class Report(BaseModel):
     created_at: datetime = Field(..., description="Timestamp of report submission") # Metadata
     user: str = Field(..., description="Document Reference to the user")            # Reference
     category: str = Field(..., description="Document Reference to the category")    # Reference
-    comments: List[PyObjectId] = []                                                    # Content
-    actions: List[Action] = []    
+    comments: List[PyObjectId] = []                                                 # Content
+    actions: List[Action] = []                                                      # Content
     
 
 # Report model: used for full reports

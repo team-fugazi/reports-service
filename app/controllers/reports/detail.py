@@ -1,6 +1,7 @@
 # Path: app/controllers/reports/detail.py
 
 from fastapi import HTTPException, status
+from pydantic import ValidationError
 from bson import ObjectId
 
 # Helpers
@@ -26,16 +27,14 @@ class ReportDetail:
             )
 
         # Populate category field
-        category_full = self.db.categories.find_one(
-            {"_id": ObjectId(report["category"])}
-        )
-
+        category_full = self.db.categories.find_one({"_id": ObjectId(report["category"])})
         report["category"] = category_full
 
-        
-
-        # Populate user field
-        print(report)
+        # Populate comments field
+        comments_ids = report.get("comments", [])
+        comments_full = self.db.comments.find({"_id": {"$in": comments_ids}})
+        # report_comments = [str(comment["_id"]) for comment in comments_full]
+        report["comments"] = [Comment(**comment) for comment in comments_full]
 
         return {
             "status": status.HTTP_200_OK,
