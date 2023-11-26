@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from ...models.report import ReportPartial, Report
+from ...models.comment import CommentPartial, Comment
 from ...controllers.reports.list import ReportList
 from ...controllers.reports.detail import ReportDetail
 from ...controllers.reports.special import ReportSpecial
@@ -51,6 +52,7 @@ def get_report_detail(report_id: str):
 
 @router.post("/{report_id}")
 def post_report_detail():
+    print("Hit post_report_detail")
     return detail_routes.post_report()
 
 
@@ -68,8 +70,8 @@ def delete_report_detail(report_id: str):
 
 
 # Add comment to report
-@router.put("/{report_id}/comment", tags=["Functional"])
-def add_comment(report_id: str, comment: Comment):
+@router.post("/{report_id}/comment", tags=["Functional"])
+def add_comment(report_id: str, comment: CommentPartial):
     return special_routes.add_comment(report_id, comment)
 
 
@@ -80,7 +82,7 @@ def delete_comment(report_id: str, comment_id: str):
 
 
 # Add action to report
-@router.put("/{report_id}/action", tags=["Functional"])
+@router.post("/{report_id}/action", tags=["Functional"])
 def add_action(report_id: str):
     return special_routes.add_action(report_id)
 

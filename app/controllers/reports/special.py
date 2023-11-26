@@ -6,8 +6,11 @@ from datetime import datetime
 
 # Models
 from ...models.report import Report
-from ...models.comment import Comment
+from ...models.comment import Comment, CommentPartial
 from ...models.action import Action
+
+# Helpers
+from ...helpers.meta_generator import generate_meta
 
 
 class ReportSpecial:
@@ -17,38 +20,80 @@ class ReportSpecial:
     """ Comments """
 
     # Add a comment to a report
-    def add_comment(self, report_id: str, comment: Comment) -> Comment:
+    def add_comment(self, report_id: str, comment: CommentPartial) -> Comment:
         # Convert partial response body to dict
-        comment = comment.model_dump()
+        comment_dict = comment.model_dump()
 
         # Add metadata
-        comment["id"] = None
-        comment["created_at"] = datetime.now()
+        comment_dict["id"] = None
+        comment_dict["created_at"] = datetime.now()
+        comment_dict["updated_at"] = None
+        comment_dict["deleted_at"] = None
 
-        try:
-            comment_full = Comment(**comment)
-        except ValidationError as e:
-            return {"status": status.HTTP_422_UNPROCESSABLE_ENTITY, "detail": str(e)}
+        # Validate and create a Comment instance
+        comment_full = Comment(**comment_dict)
 
-        result = self.db.reports.update_one(
-            {"_id": ObjectId(report_id)},
-            {
-                "$push": {
-                    "comments": comment_full.model_dump(by_alias=True, exclude=["id"])
-                }
-            },
+        print(report_id)
+        print(comment_full)
+
+        # Insert comment into the database
+        result_comment = self.db.comments.insert_one(
+            comment_full.model_dump(by_alias=True, exclude=["id"])
         )
 
-        return {"status": status.HTTP_201_CREATED, "obj": "hello"}
+        # Check if comment was created
+        if not result_comment.acknowledged:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Comment could not be created",
+            )
+
+        # Add comment to report
+        result_comment = self.db.reports.update_one(
+            {"_id": ObjectId(report_id)},
+            {"$push": {"comments": result_comment.inserted_id}},
+        )
+
+        print(result_comment.upserted_id)
+
+        return {
+            "status": status.HTTP_201_CREATED,
+            "meta": generate_meta(),
+            "message": "Comment created successfully",
+            "data": "Placeholder",
+        }
 
     # Delete a comment from a report
     def delete_comment(self, report_id: str, comment_id: str) -> Comment:
+        # Remove comment reference from the report document
         result = self.db.reports.update_one(
             {"_id": ObjectId(report_id)},
-            {"$pull": {"comments": {"id": ObjectId(comment_id)}}},
+            {"$pull": {"comments": ObjectId(comment_id)}},
         )
 
-        return {"status": status.HTTP_200_OK, "obj": "hello"}
+        # Check if the comment reference was found and removed
+        if result.modified_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Comment not found in the report",
+            )
+
+        # Delete the comment itself
+        comment_result = self.db.comments.delete_one({"_id": ObjectId(comment_id)})
+
+        # Check if the comment was deleted
+        if comment_result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Comment not found in the database",
+            )
+
+        return {
+            "status": status.HTTP_201_CREATED,
+            "meta": generate_meta(),
+            "message": "Comment created successfully",
+            "data": "Placeholder",
+        }
 
     """ Actions """
 
@@ -85,21 +130,3 @@ class ReportSpecial:
         )
 
         return {"status": status.HTTP_200_OK, "obj": "hello"}
-
-    """ Search """
-
-    # Search reports
-    def search_reports(self, query: str):
-        print(query)
-
-        pipeline = [
-            {
-                "$search": {
-                    "index": "default",
-                    "text": {"query": query, "path": {"wildcard": "*"}},
-                }
-            }
-        ]
-
-        return status.HTTP_200_OK
-        # return [Report(**report) for report in reports]
