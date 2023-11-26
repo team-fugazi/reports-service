@@ -23,7 +23,7 @@ class ReportPartial(BaseModel):
     user: str = Field(..., description="Document Reference to the user")            # Reference
 
 
-# Report model: used for full reports
+# Report model: used for report lists with limited information
 class Report(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)                     # Metadata
     description: str = Field(..., description="Report description")                 # Metadata
@@ -35,7 +35,7 @@ class Report(BaseModel):
     actions: List[Action] = []                                                      # Content
     
 
-# Report model: used for full reports
+# Report model: used for report detailed views
 class ReportFull(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)                     # Metadata
     description: str = Field(..., description="Report description")                 # Metadata
