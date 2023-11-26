@@ -32,28 +32,12 @@ def post_reports_list(report: ReportPartial):
     return list_routes.post_reports(report)
 
 
-@router.put("/")
-def put_reports_list():
-    return list_routes.put_reports()
-
-
-@router.put("/comment")
-def add_reports_list():
-    return list_routes.put_reports()
-
-
 """ Detail Routes """
 
 
 @router.get("/{report_id}")
 def get_report_detail(report_id: str):
     return detail_routes.get_report(report_id)
-
-
-@router.post("/{report_id}")
-def post_report_detail():
-    print("Hit post_report_detail")
-    return detail_routes.post_report()
 
 
 @router.put("/{report_id}")
@@ -70,24 +54,24 @@ def delete_report_detail(report_id: str):
 
 
 # Add comment to report
-@router.post("/{report_id}/comment", tags=["Functional"])
+@router.post("/{report_id}/comment", tags=["Functional", "Comments"])
 def add_comment(report_id: str, comment: CommentPartial):
     return special_routes.add_comment(report_id, comment)
 
 
 # Delete comment from report
-@router.delete("/{report_id}/comment/{comment_id}", tags=["Functional"])
+@router.delete("/{report_id}/comment/{comment_id}", tags=["Functional", "Comments"])
 def delete_comment(report_id: str, comment_id: str):
     return special_routes.delete_comment(report_id, comment_id)
 
 
 # Add action to report
-@router.post("/{report_id}/action", tags=["Functional"])
+@router.post("/{report_id}/action", tags=["Functional", "Actions"])
 def add_action(report_id: str):
     return special_routes.add_action(report_id)
 
 
 # Delete action from report
-@router.delete("/{report_id}/action/{action_id}", tags=["Functional"])
+@router.delete("/{report_id}/action/{action_id}", tags=["Functional", "Actions"])
 def delete_action(report_id: str, action_id: str):
     return special_routes.delete_action(report_id, action_id)

@@ -91,8 +91,8 @@ class ReportSpecial:
         return {
             "status": status.HTTP_201_CREATED,
             "meta": generate_meta(),
-            "message": "Comment created successfully",
-            "data": "Placeholder",
+            "message": "Comment deleted successfully",
+            "deleted_count": comment_result.deleted_count,
         }
 
     """ Actions """
