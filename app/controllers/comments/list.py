@@ -34,9 +34,6 @@ class CommentList:
 
     # Create a new comment in the database
     def post_comments(self, comment_partial: CommentPartial) -> Comment:
-        # comment_dict = comment.model_dump()
-        # result = self.db.insert_one(comment_dict)
-
         # Convert partial response body to dict
         comment_dict = comment_partial.model_dump()
 
