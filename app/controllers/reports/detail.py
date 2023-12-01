@@ -27,13 +27,14 @@ class ReportDetail:
             )
 
         # Populate category field
-        category_full = self.db.categories.find_one({"_id": ObjectId(report["category"])})
+        category_full = self.db.categories.find_one(
+            {"_id": ObjectId(report["category"])}
+        )
         report["category"] = category_full
 
         # Populate comments field
         comments_ids = report.get("comments", [])
         comments_full = self.db.comments.find({"_id": {"$in": comments_ids}})
-        # report_comments = [str(comment["_id"]) for comment in comments_full]
         report["comments"] = [Comment(**comment) for comment in comments_full]
 
         return {
@@ -41,47 +42,6 @@ class ReportDetail:
             "meta": generate_meta(),
             "data": ReportFull(**report),
         }
-
-    # def get_report(self, report_id: str) -> Report:
-    #     print(report_id)
-    #     pipeline = [
-    #         {"$match": {"_id": ObjectId(report_id)}},
-    #         {
-    #             {
-    #                 "$lookup": {
-    #                     "from": "categories",
-    #                     "localField": "category",
-    #                     "foreignField": {"$toObjectId": "$_id"},
-    #                     "as": "category",
-    #                 }
-    #             }
-    #         },
-    #     ]
-
-    #     cursor = self.db.reports.aggregate(pipeline)
-
-    #     # Print each document in the cursor
-    #     report = next(cursor, None)
-    #     print(report)
-
-    #     if not report:
-    #         raise HTTPException(
-    #             status_code=status.HTTP_404_NOT_FOUND,
-    #             detail=f"Report with id {report_id} not found",
-    #         )
-
-    #     return {
-    #         "status": status.HTTP_200_OK,
-    #         "meta": generate_meta(),
-    #         "data": "hello",
-    #     }
-
-    # Do not allow to CREATE entire report collection
-    def post_report(self) -> HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
-            detail="Use PUT method to update reports",
-        )
 
     # Update a single report in the database TODO: maybe should receive a ReportPartial
     def put_report(self, report_id: str, report: Report) -> dict:
