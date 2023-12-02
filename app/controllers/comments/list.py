@@ -8,7 +8,6 @@ from ...models.comment import CommentPartial, Comment
 
 # Helpers
 from ...helpers.meta_generator import generate_meta
-from ...helpers.transformers import transform_mongodb_to_comment
 
 
 class CommentList:

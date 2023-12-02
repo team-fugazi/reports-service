@@ -53,6 +53,12 @@ def delete_report_detail(report_id: str):
 """ Special Routes """
 
 
+# Get user statistics (reports, comments, actions)
+@router.get("/{user_id}/stats")
+def get_user_stats(user_id: str):
+    return special_routes.get_user_stats(user_id)
+
+
 # Add comment to report
 @router.post("/{report_id}/comment", tags=["Functional", "Comments"])
 def add_comment(report_id: str, comment: CommentPartial):

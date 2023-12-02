@@ -17,6 +17,29 @@ class ReportSpecial:
     def __init__(self, db):
         self.db = db
 
+    """ Stats """
+
+    # TODO: optimize with aggregation pipeline
+    def get_user_stats(self, user_id: str):
+        # Get report count
+        report_count = self.db.reports.count_documents({"user": user_id})
+
+        # Get comment count
+        comment_count = self.db.comments.count_documents({"user": user_id})
+
+        # Get action count
+        action_count = self.db.actions.count_documents({"user": user_id})
+
+        return {
+            "status": status.HTTP_200_OK,
+            "meta": generate_meta(),
+            "data": {
+                "reports": report_count,
+                "comments": comment_count,
+                "actions": action_count,
+            },
+        }
+
     """ Comments """
 
     # Add a comment to a report
