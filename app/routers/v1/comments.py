@@ -47,10 +47,30 @@ def get_active_comments(limit: int = 1):
     ]
 
     # Execute aggregation pipeline
-    result = list(database.comments.aggregate(pipeline))
+    result_com = list(database.comments.aggregate(pipeline))
+    result_rep = list(database.reports.aggregate(pipeline))
+
+    # Create a dictionary to map user IDs to counts
+    counts_dict = {}
+
+    # Process results from the comments pipeline
+    for comment in result_com:
+        user_id = comment["_id"]
+        counts_dict.setdefault(user_id, {}).update({"comments": comment["count"]})
+
+    # Process results from the reports pipeline
+    for report in result_rep:
+        user_id = report["_id"]
+        counts_dict.setdefault(user_id, {}).update({"reports": report["count"]})
+
+    # Convert the counts_dict to a list of merged results
+    merged_results = [{"_id": user_id, **counts} for user_id, counts in counts_dict.items()]
+
+    # Sort the merged results based on the total count (comments + reports)
+    merged_results.sort(key=lambda x: x.get("comments", 0) + x.get("reports", 0), reverse=True)
 
     return {
             "status": status.HTTP_200_OK,
             "meta": generate_meta(),
-            "data": result,
+            "data": merged_results,
         }
