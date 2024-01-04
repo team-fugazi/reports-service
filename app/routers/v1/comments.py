@@ -3,7 +3,7 @@ from fastapi import APIRouter, status
 from ...models.comment import Comment, CommentPartial
 from ...controllers.comments.list import CommentList
 from ...controllers.comments.detail import CommentDetail
-from ...database.mongodb import database
+from ...database.mongodb import database, user_database
 
 # utils
 from ...helpers.meta_generator import generate_meta
@@ -64,13 +64,35 @@ def get_active_comments(limit: int = 1):
         counts_dict.setdefault(user_id, {}).update({"reports": report["count"]})
 
     # Convert the counts_dict to a list of merged results
-    merged_results = [{"_id": user_id, **counts} for user_id, counts in counts_dict.items()]
+    merged_results = [
+        {"_id": user_id, **counts} for user_id, counts in counts_dict.items()
+    ]
+
+    # TODO: Get user profile from user database
+    users = []
+    for res in merged_results:
+        user = res["_id"]
+        users.append(user)
+
+    # Use $in operator to find documents where 'auth0_user_id' is in the list of IDs
+    query = {"auth0_user_id": {"$in": users}}
+
+    # Use find() to retrieve all matching documents
+    matching_profiles = user_database.profiles.find(query)
+
+    # Iterate over the results
+    for profile in matching_profiles:
+        print(profile["first_name"])
+
+
 
     # Sort the merged results based on the total count (comments + reports)
-    merged_results.sort(key=lambda x: x.get("comments", 0) + x.get("reports", 0), reverse=True)
+    merged_results.sort(
+        key=lambda x: x.get("comments", 0) + x.get("reports", 0), reverse=True
+    )
 
     return {
-            "status": status.HTTP_200_OK,
-            "meta": generate_meta(),
-            "data": merged_results,
-        }
+        "status": status.HTTP_200_OK,
+        "meta": generate_meta(),
+        "data": merged_results,
+    }

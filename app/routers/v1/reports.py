@@ -52,6 +52,10 @@ def delete_report_detail(report_id: str):
 
 """ Special Routes """
 
+# Get reports by Reddit post ID
+@router.get("/reddit_post/{reddit_post_id}")
+def get_report_by_reddit(reddit_post_id: str):
+    return special_routes.get_report_by_reddit(reddit_post_id)
 
 # Get user statistics (reports, comments, actions)
 @router.get("/{user_id}/stats")

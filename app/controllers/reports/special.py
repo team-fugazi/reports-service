@@ -5,7 +5,7 @@ from bson import ObjectId
 from datetime import datetime
 
 # Models
-from ...models.report import Report
+from ...models.report import Report, ReportFull
 from ...models.comment import Comment, CommentPartial
 from ...models.action import Action
 
@@ -16,6 +16,34 @@ from ...helpers.meta_generator import generate_meta
 class ReportSpecial:
     def __init__(self, db):
         self.db = db
+
+    """ REDDIT """
+
+    def get_report_by_reddit(self, post_id: str) -> Report:
+        report = self.db.reports.find_one({"original_post": post_id})
+
+        if not report:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Report with id {post_id} not found",
+            )
+
+        # Populate category field
+        category_full = self.db.categories.find_one(
+            {"_id": ObjectId(report["category"])}
+        )
+        report["category"] = category_full
+
+        # Populate comments field
+        comments_ids = report.get("comments", [])
+        comments_full = self.db.comments.find({"_id": {"$in": comments_ids}})
+        report["comments"] = [Comment(**comment) for comment in comments_full]
+
+        return {
+            "status": status.HTTP_200_OK,
+            "meta": generate_meta(),
+            "data": ReportFull(**report),
+        }
 
     """ Stats """
 
@@ -55,9 +83,6 @@ class ReportSpecial:
 
         # Validate and create a Comment instance
         comment_full = Comment(**comment_dict)
-
-        print(report_id)
-        print(comment_full)
 
         # Insert comment into the database
         result_comment = self.db.comments.insert_one(
@@ -112,7 +137,7 @@ class ReportSpecial:
             )
 
         return {
-            "status": status.HTTP_201_CREATED,
+            "status": status.HTTP_200_OK,
             "meta": generate_meta(),
             "message": "Comment deleted successfully",
             "deleted_count": comment_result.deleted_count,

@@ -16,3 +16,4 @@ db_params = os.getenv("DB_QUERY_PARAMS")
 db_uri = f"{db_protocol}://{db_user}:{db_pass}@{db_host}/?{db_params}"
 client = MongoClient(db_uri, tlsCAFile=certifi.where())
 database = client.reports
+user_database = client.users
